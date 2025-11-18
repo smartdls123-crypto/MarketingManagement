@@ -8,21 +8,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
+  id            String   @id @default(uuid())
+  email         String   @unique
   password      String?
   firstName     String?
   lastName      String?
   avatar        String?
-  emailVerified Boolean   @default(false)
-  role          UserRole  @default(USER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  emailVerified Boolean  @default(false)
+  role          UserRole @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  teamMembers TeamMember[]
+  teamMembers         TeamMember[]
   platformConnections PlatformConnection[]
-  campaigns   Campaign[]
-  auditLogs   AuditLog[]
+  campaigns           Campaign[]
+  auditLogs           AuditLog[]
 
   @@map("users")
 }
@@ -72,20 +72,20 @@ enum TeamRole {
 }
 
 model PlatformConnection {
-  id            String   @id @default(uuid())
-  userId        String
-  platform      Platform
-  accessToken   String
-  refreshToken  String?
-  expiresAt     DateTime?
-  accountId     String?
-  accountName   String?
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(uuid())
+  userId       String
+  platform     Platform
+  accessToken  String
+  refreshToken String?
+  expiresAt    DateTime?
+  accountId    String?
+  accountName  String?
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  campaigns Campaign[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformCampaigns PlatformCampaign[]
 
   @@unique([userId, platform])
   @@map("platform_connections")
@@ -115,11 +115,11 @@ model Campaign {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
 
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  team                Team?                 @relation(fields: [teamId], references: [id])
-  platformCampaigns   PlatformCampaign[]
-  posts               Post[]
-  analyticsData       AnalyticsData[]
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team              Team?              @relation(fields: [teamId], references: [id])
+  platformCampaigns PlatformCampaign[]
+  posts             Post[]
+  analyticsData     AnalyticsData[]
 
   @@map("campaigns")
 }
@@ -134,31 +134,31 @@ enum CampaignStatus {
 }
 
 model PlatformCampaign {
-  id               String   @id @default(uuid())
-  campaignId       String
-  platformId       String
-  externalId       String?
-  platformSpecific Json?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                   String   @id @default(uuid())
+  campaignId           String
+  platformConnectionId String
+  externalId           String?
+  platformSpecific     Json?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
-  campaign  Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  platform  PlatformConnection @relation(fields: [platformId], references: [id])
+  campaign           Campaign           @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  platformConnection PlatformConnection @relation(fields: [platformConnectionId], references: [id])
 
   @@map("platform_campaigns")
 }
 
 model Post {
-  id         String     @id @default(uuid())
-  campaignId String
-  content    String
-  mediaUrls  String[]
-  platform   Platform
-  status     PostStatus @default(DRAFT)
+  id          String     @id @default(uuid())
+  campaignId  String
+  content     String
+  mediaUrls   String[]
+  platform    Platform
+  status      PostStatus @default(DRAFT)
   scheduledAt DateTime?
   publishedAt DateTime?
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 
   campaign Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
 
